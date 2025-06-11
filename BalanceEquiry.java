@@ -1,70 +1,56 @@
-package ASimulatorSystem;
-
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.sql.ResultSet;
-import javax.swing.*;
-import java.util.*;
+import java.sql.*;
 
-class BalanceEnquiry extends JFrame implements ActionListener {
+public class BalanceEnquiry extends JFrame implements ActionListener {
 
-    JTextField t1, t2;
-    JButton b1, b2, b3;
-    JLabel l1, l2, l3;
-    String pin;
+    JButton backBtn;
+    String cardno;
 
-    BalanceEnquiry(String pin) {
-        this.pin = pin;
+    BalanceEnquiry(String cardno) {
+        this.cardno = cardno;
 
-        ImageIcon i1 = new ImageIcon(ClassLoader.getSystemResource("ASimulatorSystem/icons/atm.jpg"));
-        Image i2 = i1.getImage().getScaledInstance(1000, 1180, Image.SCALE_DEFAULT);
-        ImageIcon i3 = new ImageIcon(i2);
-        JLabel l3 = new JLabel(i3);
-        l3.setBounds(0, 0, 960, 1080);
-        add(l3);
-
-        l1 = new JLabel();
-        l1.setForeground(Color.WHITE);
-        l1.setFont(new Font("System", Font.BOLD, 16));
-
-        b1 = new JButton("BACK");
-
+        setTitle("Balance Enquiry");
         setLayout(null);
 
-        l1.setBounds(190, 350, 400, 35);
-        l3.add(l1);
+        JLabel label = new JLabel("Your Current Balance:");
+        label.setBounds(50, 50, 200, 30);
+        add(label);
 
-        b1.setBounds(390, 633, 150, 35);
-        l3.add(b1);
-        int balance = 0;
-        try{
-            Conn c1 = new Conn();
-            ResultSet rs = c1.s.executeQuery("select * from bank where pin = '"+pin+"'");
+        JLabel balanceLabel = new JLabel();
+        balanceLabel.setBounds(250, 50, 200, 30);
+        add(balanceLabel);
+
+        double balance = 0;
+        try {
+            Conn c = new Conn();
+            ResultSet rs = c.s.executeQuery("SELECT type, amount FROM bank WHERE card_no = '" + cardno + "'");
             while (rs.next()) {
-                if (rs.getString("mode").equals("Deposit")) {
-                    balance += Integer.parseInt(rs.getString("amount"));
+                if (rs.getString("type").equals("Deposit")) {
+                    balance += rs.getDouble("amount");
                 } else {
-                    balance -= Integer.parseInt(rs.getString("amount"));
+                    balance -= rs.getDouble("amount");
                 }
             }
-        }catch(Exception e){}
-        
-        l1.setText("Your Current Account Balance is Rs "+balance);
+            balanceLabel.setText("Rs. " + balance);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-        b1.addActionListener(this);
+        backBtn = new JButton("Back");
+        backBtn.setBounds(150, 120, 100, 30);
+        backBtn.addActionListener(this);
+        add(backBtn);
 
-        setSize(960, 1080);
-        setUndecorated(true);
-        setLocation(500, 0);
+        setSize(450, 250);
+        setLocation(600, 300);
         setVisible(true);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
 
     public void actionPerformed(ActionEvent ae) {
         setVisible(false);
-        new Transactions(pin).setVisible(true);
-    }
-
-    public static void main(String[] args) {
-        new BalanceEnquiry("").setVisible(true);
+        new Transactions(cardno).setVisible(true);
     }
 }
