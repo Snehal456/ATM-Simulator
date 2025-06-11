@@ -1,20 +1,24 @@
-package ASimulatorSystem;
 
-import java.sql.*;  
+// This class handles the MySQL JDBC connection.
+import java.sql.*;
 
-public class Conn{
-    Connection c;
-    Statement s;
-    public Conn(){  
-        try{  
-            Class.forName("com.mysql.cj.jdbc.Driver");  
-            c =DriverManager.getConnection("jdbc:mysql:///bankmanagementsystem","root","root");    
-            s =c.createStatement(); 
-           
-          
-            
-        }catch(Exception e){ 
-            System.out.println(e);
-        }  
-    }  
-}  
+public class Conn {
+    public Connection c;
+    public Statement s;
+
+    public Conn() {
+        try {
+            // Load MySQL JDBC driver
+            Class.forName("com.mysql.cj.jdbc.Driver");
+
+            // Connect to MySQL with correct password
+            c = DriverManager.getConnection("jdbc:mysql://localhost:3306/atm_db", "root", "Root@123");
+
+            // Create a statement object
+            s = c.createStatement();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
